@@ -5,3 +5,4 @@ authors = ["Nishant Mahajan <nishant.mahajanXVII@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+auto_ops = "0.1.0"
