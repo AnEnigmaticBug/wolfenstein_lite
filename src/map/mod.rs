@@ -79,3 +79,54 @@ impl Map {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const GRID: [u8; 36] = [
+        1, 1, 1, 1, 1, 1, // row-0
+        1, 0, 0, 0, 0, 1, // row-1
+        1, 0, 0, 0, 0, 1, // row-2
+        1, 0, 0, 0, 0, 1, // row-3
+        1, 0, 0, 0, 0, 1, // row-4
+        1, 1, 1, 1, 1, 1, // row-5
+    ];
+
+    fn make_map() -> Map {
+        Map {
+            wd: 6,
+            ht: 6,
+            grid: GRID.into(),
+        }
+    }
+
+    #[test]
+    fn intersect_given_horizontal_ray_works_fine() {
+        let map = make_map();
+        let ray = Ray2::new(Vec2::new(1.5, 1.5), Vec2::new(1.0, 0.0));
+        let intersection = map.intersect(&ray);
+
+        assert_eq!(intersection.pos, Vec2::new(5.0, 1.5));
+        assert_eq!(intersection.tex, 1);
+        assert!(intersection.in_ns_dir);
+    }
+
+    #[test]
+    fn intersect_recognizes_ew_intersection() {
+        let map = make_map();
+        let ray = Ray2::new(Vec2::new(2.0, 2.0), Vec2::new(1.0, 2.0));
+        let intersection = map.intersect(&ray);
+
+        assert!(!intersection.in_ns_dir);
+    }
+
+    #[test]
+    fn intersect_recognizes_ns_intersection() {
+        let map = make_map();
+        let ray = Ray2::new(Vec2::new(2.0, 2.0), Vec2::new(2.0, 1.0));
+        let intersection = map.intersect(&ray);
+
+        assert!(intersection.in_ns_dir);
+    }
+}
