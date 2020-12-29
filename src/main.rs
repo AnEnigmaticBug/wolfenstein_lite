@@ -67,6 +67,8 @@ fn main() {
     };
 
     main_loop.run(move |event, _, cflow| {
+        *cflow = ControlFlow::Wait;
+
         if let Event::RedrawRequested(_) = event {
             caster.render(&camera, &map, pixels.get_frame());
             pixels.render().unwrap();
