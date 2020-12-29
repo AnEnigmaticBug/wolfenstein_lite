@@ -26,6 +26,16 @@ impl Vec2 {
     pub fn normalized(&self) -> Self {
         self / self.len()
     }
+
+    pub fn rotated(&self, rad: f32) -> Self {
+        let cos = rad.cos();
+        let sin = rad.sin();
+
+        Vec2 {
+            x: self.x * cos - self.y * sin,
+            y: self.x * sin + self.y * cos,
+        }
+    }
 }
 
 impl_op_ex!(- |a: &Vec2| -> Vec2 { -1.0 * a });

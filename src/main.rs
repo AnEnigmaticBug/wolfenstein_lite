@@ -80,6 +80,16 @@ fn main() {
 
             let mut moved = false;
 
+            if input.key_held(VirtualKeyCode::Left) {
+                camera.rotate_by(-SPEED);
+                moved = true;
+            }
+
+            if input.key_held(VirtualKeyCode::Right) {
+                camera.rotate_by(SPEED);
+                moved = true;
+            }
+
             if input.key_held(VirtualKeyCode::W) {
                 camera.pos = camera.pos + camera.dir * SPEED;
                 moved = true;

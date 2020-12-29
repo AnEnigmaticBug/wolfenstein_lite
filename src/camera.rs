@@ -21,4 +21,9 @@ impl Camera {
     pub fn ray(&self, pct_x: f32) -> Ray2 {
         Ray2::new(self.pos, (self.dir + pct_x * self.plane).normalized())
     }
+
+    pub fn rotate_by(&mut self, rad: f32) {
+        self.dir = self.dir.rotated(rad);
+        self.plane = Vec2::new(-self.dir.y, self.dir.x) * (self.fov / 2.0).to_radians().tan();
+    }
 }
