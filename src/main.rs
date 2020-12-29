@@ -67,6 +67,7 @@ fn main() {
         scr_wd: SCR_WD,
         scr_ht: SCR_HT,
         textures: load_textures(),
+        floor_id: 3,
     };
 
     main_loop.run(move |event, _, cflow| {
