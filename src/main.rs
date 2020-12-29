@@ -66,6 +66,7 @@ fn main() {
     let caster = Raycaster {
         scr_wd: SCR_WD,
         scr_ht: SCR_HT,
+        textures: load_textures(),
     };
 
     main_loop.run(move |event, _, cflow| {

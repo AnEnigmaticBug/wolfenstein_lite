@@ -55,7 +55,7 @@ impl Map {
                 if tex != 0 {
                     return Intersection {
                         pos: res,
-                        tex,
+                        tex: tex - 1,
                         in_ns_dir: false,
                     };
                 }
@@ -71,7 +71,7 @@ impl Map {
                 if tex != 0 {
                     return Intersection {
                         pos: res,
-                        tex,
+                        tex: tex - 1,
                         in_ns_dir: true,
                     };
                 }
@@ -108,7 +108,7 @@ mod tests {
         let intersection = map.intersect(&ray);
 
         assert_eq!(intersection.pos, Vec2::new(5.0, 1.5));
-        assert_eq!(intersection.tex, 1);
+        assert_eq!(intersection.tex, 0);
         assert!(intersection.in_ns_dir);
     }
 
