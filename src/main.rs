@@ -67,18 +67,18 @@ fn main() {
             let mut offs = Vec2::new(0.0, 0.0);
 
             if input.key_held(VirtualKeyCode::W) {
-                offs = offs + camera.dir * SPEED;
+                offs += camera.dir * SPEED;
             }
 
             if input.key_held(VirtualKeyCode::S) {
-                offs = offs - camera.dir * SPEED;
+                offs -= camera.dir * SPEED;
             }
 
             if input.key_held(VirtualKeyCode::A) {
-                offs = offs - camera.dir.rotated(PI / 2.0) * SPEED;
+                offs -= camera.dir.rotated(PI / 2.0) * SPEED;
             }
             if input.key_held(VirtualKeyCode::D) {
-                offs = offs + camera.dir.rotated(PI / 2.0) * SPEED;
+                offs += camera.dir.rotated(PI / 2.0) * SPEED;
             }
 
             if offs.len_squared() > 0.0 {

@@ -75,8 +75,7 @@ impl Map {
         loop {
             if (pos_ew.x * dir.x) < (pos_ns.x as f32 * dir.x) {
                 let res = pos_ew;
-                pos_ew.x += step_ew.x;
-                pos_ew.y += step_ew.y;
+                pos_ew += step_ew;
 
                 let idx_x = res.x as usize;
                 let idx_y = if dir.y > 0.0 { res.y } else { res.y - 1.0 } as usize;
@@ -90,8 +89,7 @@ impl Map {
                 }
             } else {
                 let res = pos_ns;
-                pos_ns.x += step_ns.x;
-                pos_ns.y += step_ns.y;
+                pos_ns += step_ns;
 
                 let idx_x = if dir.x > 0.0 { res.x } else { res.x - 1.0 } as usize;
                 let idx_y = res.y as usize;

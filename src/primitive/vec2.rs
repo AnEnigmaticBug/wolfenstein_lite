@@ -47,3 +47,8 @@ impl_op_ex!(+ |a: &Vec2, b: &Vec2| -> Vec2 { Vec2::new(a.x + b.x, a.y + b.y) });
 impl_op_ex!(- |a: &Vec2, b: &Vec2| -> Vec2 { Vec2::new(a.x - b.x, a.y - b.y) });
 impl_op_ex!(* |a: &Vec2, b: &Vec2| -> Vec2 { Vec2::new(a.x * b.x, a.y * b.y) });
 impl_op_ex!(/ |a: &Vec2, b: &Vec2| -> Vec2 { Vec2::new(a.x / b.x, a.y / b.y) });
+
+impl_op_ex!(+= |a: &mut Vec2, b: &Vec2| { a.x += b.x; a.y += b.y; });
+impl_op_ex!(-= |a: &mut Vec2, b: &Vec2| { a.x -= b.x; a.y -= b.y; });
+impl_op_ex!(*= |a: &mut Vec2, b: &Vec2| { a.x *= b.x; a.y *= b.y; });
+impl_op_ex!(/= |a: &mut Vec2, b: &Vec2| { a.x /= b.x; a.y /= b.y; });
