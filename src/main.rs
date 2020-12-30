@@ -30,7 +30,7 @@ fn main() {
     let mut pixels = Pixels::new(SCR_WD, SCR_HT, surf).unwrap();
 
     let mut camera = Camera::new(Vec2::new(5.0, 3.0), Vec2::new(1.0, 0.0), 90.0);
-    let map = Map::load("res/stronghold.map").unwrap();
+    let map = Map::load("res/map/stronghold.map").unwrap();
     let caster = Raycaster {
         scr_wd: SCR_WD,
         scr_ht: SCR_HT,
@@ -95,14 +95,14 @@ fn main() {
 
 fn load_textures() -> Vec<Texture> {
     [
-        "res/eagle.png",
-        "res/red_brick.png",
-        "res/purple_stone.png",
-        "res/grey_stone.png",
-        "res/blue_stone.png",
-        "res/moss_stone.png",
-        "res/wood.png",
-        "res/color_stone.png",
+        "res/tex/eagle.png",
+        "res/tex/red_brick.png",
+        "res/tex/purple_stone.png",
+        "res/tex/grey_stone.png",
+        "res/tex/blue_stone.png",
+        "res/tex/moss_stone.png",
+        "res/tex/wood.png",
+        "res/tex/color_stone.png",
     ]
     .iter()
     .map(|path| Texture::load(path).unwrap())
