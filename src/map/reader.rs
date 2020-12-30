@@ -54,7 +54,7 @@ fn read_grid(
     wd: usize,
     ht: usize,
     mut lines: SplitTerminator<char>,
-) -> Result<Vec<u8>, MapReadError> {
+) -> Result<Vec<Option<u8>>, MapReadError> {
     let mut grid = Vec::with_capacity(wd * ht);
 
     for y in 0..ht {
@@ -64,10 +64,10 @@ fn read_grid(
         for _ in 0..wd {
             let c = chars.next().ok_or(MissingEntry { line_no })?;
             if c == ' ' {
-                grid.push(0);
+                grid.push(None);
             } else {
                 let d = c.to_digit(16).ok_or(ParsingError { line_no })?;
-                grid.push(d as u8);
+                grid.push(Some(d as u8));
             }
         }
     }

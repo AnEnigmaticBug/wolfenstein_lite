@@ -10,7 +10,7 @@ pub type TexId = u8;
 pub struct Map {
     pub wd: usize,
     pub ht: usize,
-    pub grid: Vec<TexId>,
+    pub grid: Vec<Option<TexId>>,
 }
 
 #[derive(Debug)]
@@ -34,12 +34,12 @@ impl Map {
         let mut res = old_pos;
 
         // Going along x won't cause a collision.
-        if self.grid[self.wd * old_idx_y + new_idx_x] == 0 {
+        if self.grid[self.wd * old_idx_y + new_idx_x].is_none() {
             res.x = new_pos.x;
         }
 
         // Going along y won't cause a collision.
-        if self.grid[self.wd * new_idx_y + old_idx_x] == 0 {
+        if self.grid[self.wd * new_idx_y + old_idx_x].is_none() {
             res.y = new_pos.y;
         }
 
@@ -80,12 +80,11 @@ impl Map {
 
                 let idx_x = res.x as usize;
                 let idx_y = if dir.y > 0.0 { res.y } else { res.y - 1.0 } as usize;
-                let tex = self.grid[self.wd * idx_y + idx_x];
 
-                if tex != 0 {
+                if let Some(tex) = self.grid[self.wd * idx_y + idx_x] {
                     return Intersection {
                         pos: res,
-                        tex: tex - 1,
+                        tex,
                         in_ns_dir: false,
                     };
                 }
@@ -96,12 +95,11 @@ impl Map {
 
                 let idx_x = if dir.x > 0.0 { res.x } else { res.x - 1.0 } as usize;
                 let idx_y = res.y as usize;
-                let tex = self.grid[self.wd * idx_y + idx_x];
 
-                if tex != 0 {
+                if let Some(tex) = self.grid[self.wd * idx_y + idx_x] {
                     return Intersection {
                         pos: res,
-                        tex: tex - 1,
+                        tex,
                         in_ns_dir: true,
                     };
                 }
@@ -114,20 +112,29 @@ impl Map {
 mod tests {
     use super::*;
 
-    const GRID: [u8; 36] = [
-        1, 1, 1, 1, 1, 1, // row-0
-        1, 0, 0, 0, 0, 1, // row-1
-        1, 0, 0, 0, 0, 1, // row-2
-        1, 0, 0, 0, 0, 1, // row-3
-        1, 0, 0, 0, 0, 1, // row-4
-        1, 1, 1, 1, 1, 1, // row-5
+    const GRID: [char; 36] = [
+        '0', '0', '0', '0', '0', '0', // row-0
+        '0', ' ', ' ', ' ', ' ', '0', // row-1
+        '0', ' ', ' ', ' ', ' ', '0', // row-2
+        '0', ' ', ' ', ' ', ' ', '0', // row-3
+        '0', ' ', ' ', ' ', ' ', '0', // row-4
+        '0', '0', '0', '0', '0', '0', // row-5
     ];
 
     fn make_map() -> Map {
         Map {
             wd: 6,
             ht: 6,
-            grid: GRID.into(),
+            grid: GRID
+                .iter()
+                .map(|&c| {
+                    if c == ' ' {
+                        None
+                    } else {
+                        Some(c.to_digit(16).unwrap() as u8)
+                    }
+                })
+                .collect(),
         }
     }
 
