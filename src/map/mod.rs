@@ -1,4 +1,9 @@
+mod reader;
+
+use std::path::Path;
+
 use crate::primitive::{Ray2, Vec2};
+use reader::{read_map, MapReadError};
 
 pub type TexId = u8;
 
@@ -16,6 +21,10 @@ pub struct Intersection {
 }
 
 impl Map {
+    pub fn load<P: AsRef<Path>>(path: P) -> Result<Self, MapReadError> {
+        read_map(path)
+    }
+
     pub fn resolve_collisions(&self, old_pos: Vec2, new_pos: Vec2) -> Vec2 {
         let old_idx_x = old_pos.x as usize;
         let old_idx_y = old_pos.y as usize;
