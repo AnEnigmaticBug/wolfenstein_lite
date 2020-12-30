@@ -96,22 +96,25 @@ fn main() {
                 moved = true;
             }
 
+            let mut offs = Vec2::new(0.0, 0.0);
+
             if input.key_held(VirtualKeyCode::W) {
-                camera.pos = camera.pos + camera.dir * SPEED;
-                moved = true;
+                offs = offs + camera.dir * SPEED;
             }
 
             if input.key_held(VirtualKeyCode::S) {
-                camera.pos = camera.pos - camera.dir * SPEED;
-                moved = true;
+                offs = offs - camera.dir * SPEED;
             }
 
             if input.key_held(VirtualKeyCode::A) {
-                camera.pos = camera.pos - camera.dir.rotated(PI / 2.0) * SPEED;
-                moved = true;
+                offs = offs - camera.dir.rotated(PI / 2.0) * SPEED;
             }
             if input.key_held(VirtualKeyCode::D) {
-                camera.pos = camera.pos + camera.dir.rotated(PI / 2.0) * SPEED;
+                offs = offs + camera.dir.rotated(PI / 2.0) * SPEED;
+            }
+
+            if offs.len_squared() > 0.0 {
+                camera.pos = map.resolve_collisions(camera.pos, camera.pos + offs);
                 moved = true;
             }
 

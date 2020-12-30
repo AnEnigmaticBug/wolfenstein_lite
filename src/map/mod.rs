@@ -16,6 +16,27 @@ pub struct Intersection {
 }
 
 impl Map {
+    pub fn resolve_collisions(&self, old_pos: Vec2, new_pos: Vec2) -> Vec2 {
+        let old_idx_x = old_pos.x as usize;
+        let old_idx_y = old_pos.y as usize;
+        let new_idx_x = new_pos.x as usize;
+        let new_idx_y = new_pos.y as usize;
+
+        let mut res = old_pos;
+
+        // Going along x won't cause a collision.
+        if self.grid[self.wd * old_idx_y + new_idx_x] == 0 {
+            res.x = new_pos.x;
+        }
+
+        // Going along y won't cause a collision.
+        if self.grid[self.wd * new_idx_y + old_idx_x] == 0 {
+            res.y = new_pos.y;
+        }
+
+        res
+    }
+
     pub fn intersect(&self, ray: &Ray2) -> Intersection {
         let tan = ray.dir.y / ray.dir.x;
         let cot = 1.0 / tan;
@@ -99,6 +120,32 @@ mod tests {
             ht: 6,
             grid: GRID.into(),
         }
+    }
+
+    #[test]
+    fn resolve_collisions_given_bad_new_x() {
+        let map = make_map();
+
+        let old_pos = Vec2::new(4.8, 4.8);
+        let new_pos = Vec2::new(5.1, 4.9);
+        assert_eq!(map.resolve_collisions(old_pos, new_pos), Vec2::new(4.8, 4.9));
+
+        let old_pos = Vec2::new(1.2, 1.2);
+        let new_pos = Vec2::new(0.9, 1.1);
+        assert_eq!(map.resolve_collisions(old_pos, new_pos), Vec2::new(1.2, 1.1));
+    }
+
+    #[test]
+    fn resolve_collisions_given_bad_new_y() {
+        let map = make_map();
+        let old_pos = Vec2::new(4.8, 4.8);
+        let new_pos = Vec2::new(4.9, 5.1);
+        
+        assert_eq!(map.resolve_collisions(old_pos, new_pos), Vec2::new(4.9, 4.8));
+
+        let old_pos = Vec2::new(1.2, 1.2);
+        let new_pos = Vec2::new(1.1, 0.9);
+        assert_eq!(map.resolve_collisions(old_pos, new_pos), Vec2::new(1.1, 1.2));
     }
 
     #[test]
