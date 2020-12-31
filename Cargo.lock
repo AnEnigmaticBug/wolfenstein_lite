@@ -1155,6 +1155,7 @@ dependencies = [
  "auto_ops",
  "pixels",
  "png",
+ "thiserror",
  "winit",
  "winit_input_helper",
 ]

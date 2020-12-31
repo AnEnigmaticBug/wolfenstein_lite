@@ -3,6 +3,7 @@ use std::io;
 use std::path::Path;
 
 use png::Decoder;
+use thiserror::Error;
 
 pub struct Texture {
     pub wd: usize,
@@ -10,22 +11,12 @@ pub struct Texture {
     pub buf: Vec<u8>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Error)]
 pub enum TextureLoadError {
-    IoError(io::Error),
-    DecodingError(png::DecodingError),
-}
-
-impl From<io::Error> for TextureLoadError {
-    fn from(src: io::Error) -> Self {
-        TextureLoadError::IoError(src)
-    }
-}
-
-impl From<png::DecodingError> for TextureLoadError {
-    fn from(src: png::DecodingError) -> Self {
-        TextureLoadError::DecodingError(src)
-    }
+    #[error("Couldn't open texture")]
+    IoError(#[from] io::Error),
+    #[error("Error in decoding png")]
+    DecodingError(#[from] png::DecodingError),
 }
 
 impl Texture {

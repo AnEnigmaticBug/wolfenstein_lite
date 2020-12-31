@@ -6,17 +6,16 @@ use std::str::{Split, SplitTerminator};
 use super::Map;
 use MapReadError::*;
 
-#[derive(Debug)]
-pub enum MapReadError {
-    IoError(io::Error),
-    ParsingError { line_no: usize },
-    MissingEntry { line_no: usize },
-}
+use thiserror::Error;
 
-impl From<io::Error> for MapReadError {
-    fn from(src: io::Error) -> Self {
-        IoError(src)
-    }
+#[derive(Debug, Error)]
+pub enum MapReadError {
+    #[error("Couldn't read map file")]
+    IoError(#[from] io::Error),
+    #[error("Format/sntax error at line {line_no:?}")]
+    ParsingError { line_no: usize },
+    #[error("Missing grid entry in line {line_no:?}")]
+    MissingEntry { line_no: usize },
 }
 
 pub fn read_map<P: AsRef<Path>>(path: P) -> Result<Map, MapReadError> {
