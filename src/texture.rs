@@ -5,6 +5,12 @@ use std::path::Path;
 use png::Decoder;
 use thiserror::Error;
 
+/// Represents a texture which can be used to draw stuff like walls, roof etc.
+///
+/// It is simply a collection of byte values. Whether RGB/RGBA is used depends
+/// upon the source image file. The current assumption is that:
+/// * sprite textures will be RGBA since they need transparency
+/// * all other stuff (wall & roof textures) will be RGB
 pub struct Texture {
     pub wd: usize,
     pub ht: usize,
@@ -20,6 +26,7 @@ pub enum TextureLoadError {
 }
 
 impl Texture {
+    /// Loads a `Texture` from `path`.
     pub fn load<P: AsRef<Path>>(path: P) -> Result<Self, TextureLoadError> {
         let file = File::open(path)?;
         let (info, mut reader) = Decoder::new(file).read_info()?;

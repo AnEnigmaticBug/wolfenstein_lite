@@ -39,6 +39,8 @@ fn main() {
     };
 
     main_loop.run(move |event, _, cflow| {
+        // Only run the loop when an event occurs. The only reason why anything
+        // should change is that the player moved i.e an event occured.
         *cflow = ControlFlow::Wait;
 
         if let Event::RedrawRequested(_) = event {

@@ -1,5 +1,6 @@
 use crate::primitive::{Ray2, Vec2};
 
+/// Represents a camera.
 #[derive(Debug)]
 pub struct Camera {
     pub pos: Vec2,
@@ -9,6 +10,7 @@ pub struct Camera {
 }
 
 impl Camera {
+    /// `dir` should already be normalized.
     pub fn new(pos: Vec2, dir: Vec2, fov: f32) -> Self {
         Camera {
             pos,
@@ -18,6 +20,11 @@ impl Camera {
         }
     }
 
+    /// Returns a ray originating from camera's position and passing through
+    /// a position (specified by `pct_x`) on the camera plane.
+    ///
+    /// `pct_x` (short for "percent x") lies in [-1, +1]. +1 means the right
+    /// most ray and -1 means the left most ray.
     pub fn ray(&self, pct_x: f32) -> Ray2 {
         Ray2::new(self.pos, (self.dir + pct_x * self.plane).normalized())
     }

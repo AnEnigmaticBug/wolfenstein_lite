@@ -18,6 +18,20 @@ pub enum MapReadError {
     MissingEntry { line_no: usize },
 }
 
+/// Attempts to read a `Map` from `path`.
+///
+/// All map files start with a one line header containing space separated width
+/// and height of the map. This is followed by a height x width grid specifying
+/// textures of each cell of the map.
+///
+/// Each row's elements are concatenated together i.e there is no separator.
+///
+/// The grid's elements can be either `' '` (space) or a hex-digit. Space means
+/// that the cell is empty and a hex-digit means the cell holds a wall with the
+/// texture id equal to the value of hex-digit.
+///
+/// Use of hex-digits means that we can only have a maximum of 16 textures. IMO
+/// this is not a problem.
 pub fn read_map<P: AsRef<Path>>(path: P) -> Result<Map, MapReadError> {
     let mut file = File::open(path)?;
     let mut contents = String::new();
