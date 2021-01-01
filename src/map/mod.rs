@@ -1,5 +1,6 @@
 mod reader;
 
+use std::fmt;
 use std::path::Path;
 
 use crate::primitive::{Ray2, Vec2};
@@ -27,7 +28,7 @@ pub struct Intersection {
 
 impl Map {
     /// Loads a map from at `path`.
-    pub fn load<P: AsRef<Path>>(path: P) -> Result<Self, MapReadError> {
+    pub fn load<P: AsRef<Path> + fmt::Debug>(path: P) -> Result<Self, MapReadError> {
         read_map(path)
     }
 

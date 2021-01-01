@@ -1,3 +1,4 @@
+use std::fmt;
 use std::fs::File;
 use std::io::{self, prelude::*};
 use std::path::Path;
@@ -32,7 +33,9 @@ pub enum MapReadError {
 ///
 /// Use of hex-digits means that we can only have a maximum of 16 textures. IMO
 /// this is not a problem.
-pub fn read_map<P: AsRef<Path>>(path: P) -> Result<Map, MapReadError> {
+pub fn read_map<P: AsRef<Path> + fmt::Debug>(path: P) -> Result<Map, MapReadError> {
+    info!("Loading map at {:?}", path);
+
     let mut file = File::open(path)?;
     let mut contents = String::new();
 
@@ -42,6 +45,9 @@ pub fn read_map<P: AsRef<Path>>(path: P) -> Result<Map, MapReadError> {
     let header = lines.next().ok_or(ParsingError { line_no: 1 })?.split(' ');
 
     let (wd, ht) = read_dims(header)?;
+
+    debug!("Map is {} by {}", ht, wd);
+
     let grid = read_grid(wd, ht, lines)?;
 
     Ok(Map { wd, ht, grid })
@@ -52,13 +58,19 @@ fn read_dims(mut header: Split<char>) -> Result<(usize, usize), MapReadError> {
         .next()
         .ok_or(ParsingError { line_no: 1 })?
         .parse::<usize>()
-        .map_err(|_| ParsingError { line_no: 1 })?;
+        .map_err(|_| {
+            error!("wd is not a +ve integer");
+            ParsingError { line_no: 1 }
+        })?;
 
     let ht = header
         .next()
         .ok_or(ParsingError { line_no: 1 })?
         .parse::<usize>()
-        .map_err(|_| ParsingError { line_no: 1 })?;
+        .map_err(|_| {
+            error!("ht is not a +ve integer");
+            ParsingError { line_no: 1 }
+        })?;
 
     Ok((wd, ht))
 }

@@ -1,3 +1,4 @@
+use std::fmt;
 use std::fs::File;
 use std::io;
 use std::path::Path;
@@ -27,11 +28,15 @@ pub enum TextureLoadError {
 
 impl Texture {
     /// Loads a `Texture` from `path`.
-    pub fn load<P: AsRef<Path>>(path: P) -> Result<Self, TextureLoadError> {
+    pub fn load<P: AsRef<Path> + fmt::Debug>(path: P) -> Result<Self, TextureLoadError> {
+        info!("Loading texture at {:?}", path);
+
         let file = File::open(path)?;
         let (info, mut reader) = Decoder::new(file).read_info()?;
         let mut buf = vec![0; info.buffer_size()];
         reader.next_frame(&mut buf)?;
+
+        info!("Texture is {:?}", info.color_type);
 
         Ok(Texture {
             wd: info.width as usize,

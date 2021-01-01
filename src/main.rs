@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate log;
+
 use std::f32::consts::PI;
 
 use pixels::{Pixels, SurfaceTexture};
@@ -17,6 +20,8 @@ const SCR_HT: u32 = 480;
 const SPEED: f32 = 0.08;
 
 fn main() {
+    env_logger::init();
+
     let main_loop = EventLoop::new();
     let mut input = WinitInputHelper::new();
     let window = WindowBuilder::new()
@@ -26,8 +31,12 @@ fn main() {
         .build(&main_loop)
         .unwrap();
 
+    debug!("Setup window");
+
     let surf = SurfaceTexture::new(SCR_WD, SCR_HT, &window);
     let mut pixels = Pixels::new(SCR_WD, SCR_HT, surf).unwrap();
+
+    debug!("Setup pixels");
 
     let mut camera = Camera::new(Vec2::new(5.0, 3.0), Vec2::new(1.0, 0.0), 90.0);
     let map = Map::load("res/map/stronghold.map").unwrap();
@@ -37,6 +46,8 @@ fn main() {
         textures: load_textures(),
         floor_id: 3,
     };
+
+    debug!("Ready to run");
 
     main_loop.run(move |event, _, cflow| {
         // Only run the loop when an event occurs. The only reason why anything
@@ -50,6 +61,7 @@ fn main() {
 
         if input.update(&event) {
             if input.key_pressed(VirtualKeyCode::Escape) || input.quit() {
+                info!("Quit event received");
                 *cflow = ControlFlow::Exit;
                 return;
             }
