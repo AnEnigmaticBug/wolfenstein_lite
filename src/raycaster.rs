@@ -19,14 +19,27 @@ impl Raycaster {
         self.render_walls(camera, map, buf);
     }
 
-    /// Renders the floor and roof. It's also black magic.
+    /// Renders the floor and roof. Both are made slightly darker for artistic
+    /// reasons.
+    ///
+    /// # Overall idea
+    ///
+    /// Floor and roof textures tile every unit distance. So, given a position
+    /// (`x`, `y`) on the floor or roof, we can get its color from the texture
+    /// using `x.fract()` and `y.fract()`.
+    ///
+    /// So the question reduces to mapping screen's pixels to positions on the
+    /// floor and roof.
+    ///
+    /// As the camera is exactly at center of the screen, we can simply mirror
+    /// the floor to get the ceiling.
     fn render_floor(&self, camera: &Camera, buf: &mut [u8]) {
         let scr_wd = self.scr_wd as f32;
         let scr_ht = self.scr_ht as f32;
 
         let tex = &self.textures[self.floor_id];
 
-        for y in 0..self.scr_ht {
+        for y in (self.scr_ht / 2)..self.scr_ht {
             let ray_ltmost = camera.ray(-1.0);
             let ray_rtmost = camera.ray(1.0);
 
