@@ -1,8 +1,9 @@
 #[macro_use]
 extern crate log;
 
-use std::{f32::consts::PI, fmt, path::Path};
+use std::{error::Error, f32::consts::PI, fmt, path::Path};
 
+use native_dialog::{MessageDialog, MessageType};
 use pixels::{Pixels, SurfaceTexture};
 use raycaster::{
     camera::Camera, config::Config, map::Map, primitive::Vec2, raycaster::Raycaster,
@@ -19,7 +20,10 @@ use winit_input_helper::WinitInputHelper;
 fn main() {
     env_logger::init();
 
-    let config = Config::read("Config.toml").unwrap();
+    let config = Config::read("Config.toml")
+        .map_err(|e| error_dialog(e, "Couldn't read Config.toml"))
+        .unwrap();
+
     let scr_wd = config.screen.wd;
     let scr_ht = config.screen.ht;
     let player = config.player;
@@ -32,12 +36,15 @@ fn main() {
         .with_inner_size(LogicalSize::new(scr_wd as f64, scr_ht as f64))
         .with_resizable(false)
         .build(&main_loop)
+        .map_err(|e| error_dialog(e, "Couldn't create window"))
         .unwrap();
 
     debug!("Setup window");
 
     let surf = SurfaceTexture::new(scr_wd, scr_ht, &window);
-    let mut pixels = Pixels::new(scr_wd, scr_ht, surf).unwrap();
+    let mut pixels = Pixels::new(scr_wd, scr_ht, surf)
+        .map_err(|e| error_dialog(e, "Couldn't setup drawing"))
+        .unwrap();
 
     debug!("Setup pixels");
 
@@ -46,7 +53,9 @@ fn main() {
         player.initial_dir,
         player.fov.unwrap_or(90.0),
     );
-    let map = Map::load(config.assets.map).unwrap();
+    let map = Map::load(config.assets.map)
+        .map_err(|e| error_dialog(e, "Couldn't load map file"))
+        .unwrap();
     let caster = Raycaster {
         scr_wd,
         scr_ht,
@@ -64,7 +73,10 @@ fn main() {
 
         if let Event::RedrawRequested(_) = event {
             caster.render(&camera, &map, pixels.get_frame());
-            pixels.render().unwrap();
+            pixels
+                .render()
+                .map_err(|e| error_dialog(e, "Couldn't draw frame"))
+                .unwrap();
         }
 
         if input.update(&event) {
@@ -118,6 +130,22 @@ fn main() {
 fn load_textures<P: AsRef<Path> + fmt::Debug>(paths: &[P]) -> Vec<Texture> {
     paths
         .iter()
-        .map(|path| Texture::load(path).unwrap())
+        .map(|path| {
+            Texture::load(path)
+                .map_err(|e| error_dialog(e, "Couldn't load texture"))
+                .unwrap()
+        })
         .collect()
+}
+
+fn error_dialog<T: Error + Sized>(e: T, title: &str) -> T {
+    error!("{}: {}", title, e);
+
+    MessageDialog::new()
+        .set_type(MessageType::Error)
+        .set_title(title)
+        .set_text(&format!("{}!", e))
+        .show_alert()
+        .expect("Couldn't show dialog");
+    e
 }
