@@ -10,6 +10,8 @@ env_logger = "0.8.2"
 log = "0.4.11"
 pixels = "0.2.0"
 png = "0.16.8"
+serde = { version = "1.0.118", features = ["derive"] }
 thiserror = "1.0.23"
+toml = "0.5.8"
 winit = "0.24.0"
 winit_input_helper = "0.9.0"
