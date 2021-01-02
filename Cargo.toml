@@ -8,6 +8,7 @@ edition = "2018"
 auto_ops = "0.1.0"
 env_logger = "0.8.2"
 log = "0.4.11"
+native-dialog = "0.5.2"
 pixels = "0.2.0"
 png = "0.16.8"
 serde = { version = "1.0.118", features = ["derive"] }
