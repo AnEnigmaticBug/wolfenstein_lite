@@ -1,6 +1,7 @@
 use auto_ops::{impl_op_ex, impl_op_ex_commutative};
+use serde::Deserialize;
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Deserialize)]
 pub struct Vec2 {
     pub x: f32,
     pub y: f32,
