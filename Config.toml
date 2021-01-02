@@ -1,0 +1,28 @@
+[screen]
+wd = 640
+ht = 480
+
+[assets]
+tex = [
+    "res/tex/eagle.png",
+    "res/tex/red_brick.png",
+    "res/tex/purple_stone.png",
+    "res/tex/grey_stone.png",
+    "res/tex/blue_stone.png",
+    "res/tex/moss_stone.png",
+    "res/tex/wood.png",
+    "res/tex/color_stone.png",
+]
+map = "res/map/stronghold.map"
+
+[player]
+fov = 90
+speed = 0.08
+initial_pos = { x = 5.0, y = 3.0 }
+initial_dir = { x = 1.0, y = 0.0 }
+
+[misc]
+# The index of texture in assets.tex to use for floor and roofs.
+floor_tex = 3
+# The factor with which wall heights will be scaled. Not tested.
+wall_ht_scale = 1.0

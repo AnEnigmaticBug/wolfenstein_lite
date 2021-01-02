@@ -7,6 +7,7 @@ pub struct Raycaster {
     pub textures: Vec<Texture>,
     /// Index of the `Texture` to be used for floor and roof.
     pub floor_id: usize,
+    pub wall_ht_scale: f32,
 }
 
 impl Raycaster {
@@ -90,7 +91,7 @@ impl Raycaster {
 
             let cos = ray.dir.dot(&camera.dir);
             let perp_dist = (intersection.pos - camera.pos).len() * cos;
-            let wall_ht = 1.0 * scr_ht / perp_dist;
+            let wall_ht = self.wall_ht_scale * scr_ht / perp_dist;
             let offs = ((scr_ht - wall_ht) / 2.0).max(0.0);
 
             let wall_top = offs as u32;

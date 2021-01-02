@@ -1,11 +1,12 @@
 #[macro_use]
 extern crate log;
 
-use std::f32::consts::PI;
+use std::{f32::consts::PI, fmt, path::Path};
 
 use pixels::{Pixels, SurfaceTexture};
 use raycaster::{
-    camera::Camera, map::Map, primitive::Vec2, raycaster::Raycaster, texture::Texture,
+    camera::Camera, config::Config, map::Map, primitive::Vec2, raycaster::Raycaster,
+    texture::Texture,
 };
 use winit::{
     dpi::LogicalSize,
@@ -15,36 +16,43 @@ use winit::{
 };
 use winit_input_helper::WinitInputHelper;
 
-const SCR_WD: u32 = 640;
-const SCR_HT: u32 = 480;
-const SPEED: f32 = 0.08;
-
 fn main() {
     env_logger::init();
+
+    let config = Config::read("Config.toml").unwrap();
+    let scr_wd = config.screen.wd;
+    let scr_ht = config.screen.ht;
+    let player = config.player;
+    let wall_ht_scale = config.misc.wall_ht_scale.unwrap_or(1.0);
 
     let main_loop = EventLoop::new();
     let mut input = WinitInputHelper::new();
     let window = WindowBuilder::new()
         .with_title("Raycaster")
-        .with_inner_size(LogicalSize::new(SCR_WD as f64, SCR_HT as f64))
+        .with_inner_size(LogicalSize::new(scr_wd as f64, scr_ht as f64))
         .with_resizable(false)
         .build(&main_loop)
         .unwrap();
 
     debug!("Setup window");
 
-    let surf = SurfaceTexture::new(SCR_WD, SCR_HT, &window);
-    let mut pixels = Pixels::new(SCR_WD, SCR_HT, surf).unwrap();
+    let surf = SurfaceTexture::new(scr_wd, scr_ht, &window);
+    let mut pixels = Pixels::new(scr_wd, scr_ht, surf).unwrap();
 
     debug!("Setup pixels");
 
-    let mut camera = Camera::new(Vec2::new(5.0, 3.0), Vec2::new(1.0, 0.0), 90.0);
-    let map = Map::load("res/map/stronghold.map").unwrap();
+    let mut camera = Camera::new(
+        player.initial_pos,
+        player.initial_dir,
+        player.fov.unwrap_or(90.0),
+    );
+    let map = Map::load(config.assets.map).unwrap();
     let caster = Raycaster {
-        scr_wd: SCR_WD,
-        scr_ht: SCR_HT,
-        textures: load_textures(),
-        floor_id: 3,
+        scr_wd,
+        scr_ht,
+        textures: load_textures(&config.assets.tex),
+        floor_id: config.misc.floor_tex,
+        wall_ht_scale,
     };
 
     debug!("Ready to run");
@@ -69,30 +77,30 @@ fn main() {
             let mut moved = false;
 
             if input.key_held(VirtualKeyCode::Left) {
-                camera.rotate_by(-SPEED);
+                camera.rotate_by(-player.speed);
                 moved = true;
             }
 
             if input.key_held(VirtualKeyCode::Right) {
-                camera.rotate_by(SPEED);
+                camera.rotate_by(player.speed);
                 moved = true;
             }
 
             let mut offs = Vec2::new(0.0, 0.0);
 
             if input.key_held(VirtualKeyCode::W) {
-                offs += camera.dir * SPEED;
+                offs += camera.dir * player.speed;
             }
 
             if input.key_held(VirtualKeyCode::S) {
-                offs -= camera.dir * SPEED;
+                offs -= camera.dir * player.speed;
             }
 
             if input.key_held(VirtualKeyCode::A) {
-                offs -= camera.dir.rotated(PI / 2.0) * SPEED;
+                offs -= camera.dir.rotated(PI / 2.0) * player.speed;
             }
             if input.key_held(VirtualKeyCode::D) {
-                offs += camera.dir.rotated(PI / 2.0) * SPEED;
+                offs += camera.dir.rotated(PI / 2.0) * player.speed;
             }
 
             if offs.len_squared() > 0.0 {
@@ -107,18 +115,9 @@ fn main() {
     });
 }
 
-fn load_textures() -> Vec<Texture> {
-    [
-        "res/tex/eagle.png",
-        "res/tex/red_brick.png",
-        "res/tex/purple_stone.png",
-        "res/tex/grey_stone.png",
-        "res/tex/blue_stone.png",
-        "res/tex/moss_stone.png",
-        "res/tex/wood.png",
-        "res/tex/color_stone.png",
-    ]
-    .iter()
-    .map(|path| Texture::load(path).unwrap())
-    .collect()
+fn load_textures<P: AsRef<Path> + fmt::Debug>(paths: &[P]) -> Vec<Texture> {
+    paths
+        .iter()
+        .map(|path| Texture::load(path).unwrap())
+        .collect()
 }
